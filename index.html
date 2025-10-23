@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .expense-form { display: none; }
+        .active-section { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-blue-600 text-white p-4">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-xl font-bold">ExpenseManager</h1>
+                <div class="space-x-4">
+                    <select id="userType" class="bg-blue-500 text-white px-3 py-1 rounded">
+                        <option value="user">Regular User</option>
+                        <option value="manager">Manager</option>
+                        <option value="accountant">Accountant</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto p-4">
+            <!-- User Section -->
+            <div id="userSection" class="expense-form active-section">
+                <h2 class="text-2xl font-bold mb-4">Submit Expense</h2>
+                <form id="expenseForm" class="space-y-4" enctype="multipart/form-data">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block mb-1">Date</label>
+                            <input type="date" id="expenseDate" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Amount</label>
+                            <input type="number" id="expenseAmount" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Category</label>
+                            <select id="expenseCategory" required class="w-full p-2 border rounded">
+                                <option value="travel">Travel</option>
+                                <option value="food">Food</option>
+                                <option value="supplies">Supplies</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block mb-1">Description</label>
+                            <input type="text" id="expenseDescription" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Attachments</label>
+                            <input type="file" id="expenseAttachments" multiple class="w-full p-2 border rounded">
+                        </div>
+                        <div id="travelFields" class="hidden">
+                            <div>
+                                <label class="block mb-1">From Location</label>
+                                <input type="text" id="fromLocation" class="w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label class="block mb-1">To Location</label>
+                                <input type="text" id="toLocation" class="w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label class="block mb-1">Mode of Transport</label>
+                                <input type="text" id="transportMode" class="w-full p-2 border rounded">
+                            </div>
+                        </div>
+                        <div id="otherFields" class="hidden">
+                            <div>
+                                <label class="block mb-1">Invoice No</label>
+                                <input type="text" id="invoiceNo" class="w-full p-2 border rounded">
+                            </div>
+                            <div>
+                                <label class="block mb-1">Client Name</label>
+                                <input type="text" id="clientName" class="w-full p-2 border rounded">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit Expense</button>
+                </form>
+
+                <div id="userExpenseList" class="mt-8">
+                    <h3 class="text-xl font-bold mb-4">Your Expenses</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="px-4 py-2">Date</th>
+                                    <th class="px-4 py-2">Amount</th>
+                                    <th class="px-4 py-2">Category</th>
+                                    <th class="px-4 py-2">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userExpenseTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manager Section -->
+            <div id="managerSection" class="expense-form">
+                <h2 class="text-2xl font-bold mb-4">Expense Approvals</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">Employee</th>
+                                <th class="px-4 py-2">Date</th>
+                                <th class="px-4 py-2">Amount</th>
+                                <th class="px-4 py-2">Category</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="managerExpenseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Accountant Section -->
+            <div id="accountantSection" class="expense-form">
+                <h2 class="text-2xl font-bold mb-4">Process Payments</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">Employee</th>
+                                <th class="px-4 py-2">Total Amount</th>
+                                <th class="px-4 py-2">Status</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountantExpenseTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Section -->
+            <div id="adminSection" class="expense-form">
+                <h2 class="text-2xl font-bold mb-4">User Management</h2>
+                <form id="adminForm" class="space-y-4 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block mb-1">Username</label>
+                            <input type="text" id="username" required class="w-full p-2 border rounded">
+                        </div>
+                        <div>
+                            <label class="block mb-1">Role</label>
+                            <select id="userRole" required class="w-full p-2 border rounded">
+                                <option value="user">User</option>
+                                <option value="manager">Manager</option>
+                                <option value="accountant">Accountant</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block mb-1">Assign Manager</label>
+                            <select id="assignManager" class="w-full p-2 border rounded">
+                                <option value="">Select Manager</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Add User</button>
+                </form>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="px-4 py-2">Username</th>
+                                <th class="px-4 py-2">Role</th>
+                                <th class="px-4 py-2">Manager</th>
+                                <th class="px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUserTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data storage
+        let expenses = [];
+        let users = [
+            { id: 1, username: 'admin', role: 'admin' },
+            { id: 2, username: 'manager1', role: 'manager' },
+            { id: 3, username: 'user1', role: 'user', managerId: 2 }
+        ];
+
+        // Event Listeners
+        document.getElementById('userType').addEventListener('change', switchUserType);
+        document.getElementById('expenseForm').addEventListener('submit', submitExpense);
+        document.getElementById('adminForm').addEventListener('submit', addUser);
+        document.getElementById('expenseCategory').addEventListener('change', toggleExpenseFields);
+
+        // Initialize
+        function init() {
+            updateExpenseTables();
+            updateAdminTable();
+        }
+
+        // Switch between user types
+        function switchUserType(e) {
+            document.querySelectorAll('.expense-form').forEach(form => form.classList.remove('active-section'));
+            document.getElementById(`${e.target.value}Section`).classList.add('active-section');
+            toggleExpenseFields();
+        }
+
+        // Show/hide additional fields based on selected category
+        function toggleExpenseFields() {
+            const category = document.getElementById('expenseCategory').value;
+            document.getElementById('travelFields').classList.toggle('hidden', category !== 'travel');
+            document.getElementById('otherFields').classList.toggle('hidden', category === 'travel');
+        }
+
+        // Submit expense
+        function submitExpense(e) {
+            e.preventDefault();
+            const expense = {
+                id: expenses.length + 1,
+                date: document.getElementById('expenseDate').value,
+                amount: document.getElementById('expenseAmount').value,
+                category: document.getElementById('expenseCategory').value,
+                description: document.getElementById('expenseDescription').value,
+                attachments: document.getElementById('expenseAttachments').files,
+                status: 'pending',
+                userId: 3 // Mock user ID
+            };
+            if (expense.category === 'travel') {
+                expense.fromLocation = document.getElementById('fromLocation').value;
+                expense.toLocation = document.getElementById('toLocation').value;
+                expense.transportMode = document.getElementById('transportMode').value;
+            } else {
+                expense.invoiceNo = document.getElementById('invoiceNo').value;
+                expense.clientName = document.getElementById('clientName').value;
+            }
+            expenses.push(expense);
+            updateExpenseTables();
+            e.target.reset();
+            toggleExpenseFields();
+        }
+
+        // Update expense tables
+        function updateExpenseTables() {
+            // User expenses
+            const userExpenses = expenses.filter(e => e.userId === 3);
+            document.getElementById('userExpenseTableBody').innerHTML = userExpenses.map(e => `
+                <tr>
+                    <td class="border px-4 py-2">${e.date}</td>
+                    <td class="border px-4 py-2">$${e.amount}</td>
+                    <td class="border px-4 py-2">${e.category}</td>
+                    <td class="border px-4 py-2">${e.status}</td>
+                </tr>
+            `).join('');
+
+            // Manager expenses
+            const managerExpenses = expenses.filter(e => e.status === 'pending');
+            document.getElementById('managerExpenseTableBody').innerHTML = managerExpenses.map(e => `
+                <tr>
+                    <td class="border px-4 py-2">User ${e.userId}</td>
+                    <td class="border px-4 py-2">${e.date}</td>
+                    <td class="border px-4 py-2">$${e.amount}</td>
+                    <td class="border px-4 py-2">${e.category}</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="approveExpense(${e.id})" class="bg-green-500 text-white px-2 py-1 rounded mr-2">Approve</button>
+                        <button onclick="rejectExpense(${e.id})" class="bg-red-500 text-white px-2 py-1 rounded">Reject</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Accountant expenses
+            const accountantExpenses = expenses.filter(e => e.status === 'approved');
+            document.getElementById('accountantExpenseTableBody').innerHTML = accountantExpenses.map(e => `
+                <tr>
+                    <td class="border px-4 py-2">User ${e.userId}</td>
+                    <td class="border px-4 py-2">$${e.amount}</td>
+                    <td class="border px-4 py-2">${e.status}</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="markAsPaid(${e.id})" class="bg-blue-500 text-white px-2 py-1 rounded">Mark as Paid</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Admin functions
+        function addUser(e) {
+            e.preventDefault();
+            const user = {
+                id: users.length + 1,
+                username: document.getElementById('username').value,
+                role: document.getElementById('userRole').value,
+                managerId: document.getElementById('assignManager').value || null
+            };
+            users.push(user);
+            updateAdminTable();
+            e.target.reset();
+        }
+
+        function updateAdminTable() {
+            document.getElementById('adminUserTableBody').innerHTML = users.map(u => `
+                <tr>
+                    <td class="border px-4 py-2">${u.username}</td>
+                    <td class="border px-4 py-2">${u.role}</td>
+                    <td class="border px-4 py-2">${u.managerId ? `Manager ${u.managerId}` : 'N/A'}</td>
+                    <td class="border px-4 py-2">
+                        <button onclick="deleteUser(${u.id})" class="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Expense actions
+        function approveExpense(id) {
+            const expense = expenses.find(e => e.id === id);
+            if (expense) {
+                expense.status = 'approved';
+                updateExpenseTables();
+            }
+        }
+
+        function rejectExpense(id) {
+            const expense = expenses.find(e => e.id === id);
+            if (expense) {
+                expense.status = 'rejected';
+                updateExpenseTables();
+            }
+        }
+
+        function markAsPaid(id) {
+            const expense = expenses.find(e => e.id === id);
+            if (expense) {
+                expense.status = 'paid';
+                updateExpenseTables();
+            }
+        }
+
+        function deleteUser(id) {
+            users = users.filter(u => u.id !== id);
+            updateAdminTable();
+        }
+
+        // Initialize the app
+        init();
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
